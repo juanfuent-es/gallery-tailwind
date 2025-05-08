@@ -1,4 +1,7 @@
-# Gallery Tailwind
+# Tailwind Bento Masonry Grid
+
+A responsive, CSS-only masonry layout built with **Tailwind CSS** using `grid`, `aspect-ratio`, and utility classes.  
+This layout simulates a bento-style masonry system that adapts to screen size and preserves clean proportions, **without using JavaScript**.
 
 ## Instalación
 
