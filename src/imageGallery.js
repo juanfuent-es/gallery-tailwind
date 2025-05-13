@@ -1,4 +1,5 @@
 import ImageService from './imageService.js';
+
 export default class ImageGallery {
     constructor(containerId) {
         this.container = document.getElementById(containerId);

@@ -7,10 +7,10 @@ class SearchForm {
     this.errorElement = document.getElementById('searchError');
     this.gallery = new ImageGallery('grid-container');
     
-    this.initializeEventListeners();
+    this.events();
   }
 
-  initializeEventListeners() {
+  events() {
     this.form.addEventListener('submit', (event) => this.handleSubmit(event));
     this.input.addEventListener('input', (event) => this.handleInput(event));
   }
