@@ -11,7 +11,19 @@ export default class ImageGallery {
         this.totalPages = 0;
         this.hasMoreResults = true;
         this.observer = null;
+        this.blazy = null;
         this.setupIntersectionObserver();
+        this.initBlazy();
+    }
+
+    initBlazy() {
+        this.blazy = new Blazy({
+            selector: '.b-lazy',
+            success: (element) => {
+                // Add fade-in animation when image loads
+                element.classList.add('loaded');
+            }
+        });
     }
 
     setupIntersectionObserver() {
@@ -76,6 +88,11 @@ export default class ImageGallery {
                 this.container.appendChild(imageElement);
             });
 
+            // Revalidate Blazy after adding new images
+            if (this.blazy) {
+                this.blazy.revalidate();
+            }
+
             // Update observer to watch the new last element
             this.observeLastElement();
 
@@ -106,11 +123,12 @@ export default class ImageGallery {
         div.className = 'box';
 
         const img = document.createElement('img');
-        img.src = image.urls.regular;
+        img.className = 'b-lazy';
+        img.setAttribute('data-src', image.urls.regular);
         img.alt = image.alt_description || 'Imagen de Unsplash';
         img.loading = 'lazy';
 
-        // Determinar las clases según las dimensiones
+        // Determinar las clases según las dimensiones del JSON
         const width = image.width;
         const height = image.height;
         const ratio = width / height;
