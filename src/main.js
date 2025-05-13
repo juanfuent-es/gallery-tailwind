@@ -1,56 +1,68 @@
 import './style.css'
 import { ImageGallery } from './imageService.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-  const searchForm = document.getElementById('searchForm');
-  const searchInput = document.getElementById('searchInput');
-  const searchError = document.getElementById('searchError');
-  const gallery = new ImageGallery('grid-container');
+class SearchForm {
+  constructor() {
+    this.form = document.getElementById('searchForm');
+    this.input = document.getElementById('searchInput');
+    this.errorElement = document.getElementById('searchError');
+    this.gallery = new ImageGallery('grid-container');
+    
+    this.initializeEventListeners();
+  }
 
-  // Validación del formulario
-  searchForm.addEventListener('submit', async (e) => {
+  initializeEventListeners() {
+    this.form.addEventListener('submit', this.handleSubmit.bind(this));
+    this.input.addEventListener('input', this.handleInput.bind(this));
+  }
+
+  async handleSubmit(e) {
     e.preventDefault();
     
-    const query = searchInput.value.trim();
+    const query = this.input.value.trim();
     
-    // Validaciones
-    if (query.length < 3) {
-      showError('La búsqueda debe tener al menos 3 caracteres');
-      return;
-    }
-
-    if (query.length > 50) {
-      showError('La búsqueda no puede tener más de 50 caracteres');
+    if (!this.validateQuery(query)) {
       return;
     }
 
     try {
-      hideError();
-      await gallery.searchImages(query);
+      this.hideError();
+      await this.gallery.searchImages(query);
     } catch (error) {
-      showError('Error al buscar imágenes. Por favor, intenta de nuevo.');
+      this.showError('Error al buscar imágenes. Por favor, intenta de nuevo.');
     }
-  });
+  }
 
-  // Validación en tiempo real
-  searchInput.addEventListener('input', () => {
-    const query = searchInput.value.trim();
-    
+  handleInput() {
+    const query = this.input.value.trim();
+    this.validateQuery(query);
+  }
+
+  validateQuery(query) {
     if (query.length < 3) {
-      showError('La búsqueda debe tener al menos 3 caracteres');
-    } else if (query.length > 50) {
-      showError('La búsqueda no puede tener más de 50 caracteres');
-    } else {
-      hideError();
+      this.showError('La búsqueda debe tener al menos 3 caracteres');
+      return false;
     }
-  });
 
-  function showError(message) {
-    searchError.textContent = message;
-    searchError.classList.remove('hidden');
+    if (query.length > 50) {
+      this.showError('La búsqueda no puede tener más de 50 caracteres');
+      return false;
+    }
+
+    this.hideError();
+    return true;
   }
 
-  function hideError() {
-    searchError.classList.add('hidden');
+  showError(message) {
+    this.errorElement.textContent = message;
+    this.errorElement.classList.remove('hidden');
   }
+
+  hideError() {
+    this.errorElement.classList.add('hidden');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  new SearchForm();
 });
