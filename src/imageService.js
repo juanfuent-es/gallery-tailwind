@@ -42,26 +42,41 @@ export class ImageGallery {
         this.currentQuery = '';
         this.isLoading = false;
         this.totalPages = 0;
+        this.hasMoreResults = true;
         this.observer = null;
         this.setupIntersectionObserver();
     }
 
     setupIntersectionObserver() {
-        this.observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting && !this.isLoading) {
-                        this.loadMoreImages();
-                    }
-                });
-            },
-            { threshold: 0.5 }
-        );
+        const options = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        this.observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !this.isLoading && this.hasMoreResults) {
+                    this.loadMoreImages();
+                }
+            });
+        }, options);
+
+        // Observe the last element of the grid
+        this.observeLastElement();
+    }
+
+    observeLastElement() {
+        const lastElement = this.container.lastElementChild;
+        if (lastElement) {
+            this.observer.observe(lastElement);
+        }
     }
 
     async searchImages(query) {
         this.currentQuery = query;
         this.currentPage = 1;
+        this.hasMoreResults = true;
         this.clearGallery();
         await this.loadImages();
     }
@@ -84,12 +99,26 @@ export class ImageGallery {
             const images = response.results;
             this.totalPages = response.totalPages;
 
+            if (images.length === 0) {
+                this.showNoMoreResults();
+                return;
+            }
+
             images.forEach(image => {
                 const imageElement = this.createImageElement(image);
                 this.container.appendChild(imageElement);
             });
 
-            this.updatePagination();
+            // Update observer to watch the new last element
+            this.observeLastElement();
+
+            this.currentPage++;
+            this.hasMoreResults = this.currentPage <= this.totalPages;
+
+            if (!this.hasMoreResults) {
+                this.showNoMoreResults();
+            }
+
         } catch (error) {
             console.error('Error al cargar imágenes:', error);
             throw error;
@@ -98,59 +127,11 @@ export class ImageGallery {
         }
     }
 
-    updatePagination() {
-        this.clearPagination();
-        if (!this.paginationContainer || this.totalPages <= 1) return;
-
-        const paginationList = document.createElement('ul');
-        paginationList.className = 'flex justify-center items-center space-x-2';
-
-        // Previous button
-        if (this.currentPage > 1) {
-            const prevButton = this.createPaginationButton('←', () => this.goToPage(this.currentPage - 1));
-            paginationList.appendChild(prevButton);
-        }
-
-        // Page numbers
-        const maxVisiblePages = 5;
-        let startPage = Math.max(1, this.currentPage - Math.floor(maxVisiblePages / 2));
-        let endPage = Math.min(this.totalPages, startPage + maxVisiblePages - 1);
-
-        if (endPage - startPage + 1 < maxVisiblePages) {
-            startPage = Math.max(1, endPage - maxVisiblePages + 1);
-        }
-
-        for (let i = startPage; i <= endPage; i++) {
-            const pageButton = this.createPaginationButton(i, () => this.goToPage(i));
-            if (i === this.currentPage) {
-                pageButton.classList.add('bg-blue-500', 'text-white');
-            }
-            paginationList.appendChild(pageButton);
-        }
-
-        // Next button
-        if (this.currentPage < this.totalPages) {
-            const nextButton = this.createPaginationButton('→', () => this.goToPage(this.currentPage + 1));
-            paginationList.appendChild(nextButton);
-        }
-
-        this.paginationContainer.appendChild(paginationList);
-    }
-
-    createPaginationButton(text, onClick) {
-        const button = document.createElement('li');
-        button.className = 'px-3 py-2 rounded cursor-pointer hover:bg-gray-200 transition-colors';
-        button.textContent = text;
-        button.addEventListener('click', onClick);
-        return button;
-    }
-
-    async goToPage(page) {
-        if (page === this.currentPage || page < 1 || page > this.totalPages) return;
-        this.currentPage = page;
-        this.clearGallery();
-        await this.loadImages();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    showNoMoreResults() {
+        const noMoreResults = document.createElement('div');
+        noMoreResults.className = 'w-full text-center py-4 text-gray-500 text-lg';
+        noMoreResults.textContent = 'No hay más resultados';
+        this.container.appendChild(noMoreResults);
     }
 
     createImageElement(image) {
@@ -183,7 +164,7 @@ export class ImageGallery {
     }
 
     async loadMoreImages() {
-        if (!this.isLoading) {
+        if (!this.isLoading && this.hasMoreResults) {
             await this.loadImages();
         }
     }
