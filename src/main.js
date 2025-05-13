@@ -1,4 +1,3 @@
-import './style.css'
 import { ImageGallery } from './imageService.js';
 
 class SearchForm {
@@ -12,8 +11,8 @@ class SearchForm {
   }
 
   initializeEventListeners() {
-    this.form.addEventListener('submit', this.handleSubmit.bind(this));
-    this.input.addEventListener('input', this.handleInput.bind(this));
+    this.form.addEventListener('submit', () => this.handleSubmit(this));
+    this.input.addEventListener('input', () => this.handleInput(this));
   }
 
   async handleSubmit(e) {
@@ -63,6 +62,4 @@ class SearchForm {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  new SearchForm();
-});
+const buscador = new SearchForm();
