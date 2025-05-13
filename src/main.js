@@ -1,4 +1,4 @@
-import { ImageGallery } from './imageService.js';
+import ImageGallery from './imageGallery.js';
 
 class SearchForm {
   constructor() {
