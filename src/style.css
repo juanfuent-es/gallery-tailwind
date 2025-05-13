@@ -9,6 +9,9 @@
 }
 
 @layer base {
+    img {
+        @apply w-full !h-full object-cover;
+    }
     h1, h2, h3, h4, h5, h6 {
         font-family: var(--default-font-family);
     }
@@ -16,7 +19,7 @@
 
 @layer components {
     .box {
-        @apply relative rounded flex items-center justify-center overflow-hidden border border-dashed border-gray-300 col-span-1 row-span-1 aspect-square p-2;
+        @apply relative rounded flex items-center justify-center overflow-hidden border border-dashed border-gray-300 col-span-1 row-span-1 aspect-square p-2 transition-all duration-300;
     }
       
     .box-double {
@@ -33,10 +36,6 @@
         @apply col-span-2 row-span-1;
         aspect-ratio: 2 / 1; /* horizontal */
     }
-      
-    .box img {
-        @apply w-full h-full object-cover;
-    }      
       
 }
 

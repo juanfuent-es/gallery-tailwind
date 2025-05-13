@@ -94,6 +94,22 @@ export class ImageGallery {
     img.alt = image.alt_description || 'Imagen de Unsplash';
     img.loading = 'lazy';
     
+    // Determinar las clases según las dimensiones
+    const width = image.width;
+    const height = image.height;
+    const ratio = width / height;
+
+    if (ratio > 1.5) {
+      // Imagen landscape (más ancha que alta)
+      div.classList.add('box-landscape');
+    } else if (ratio < 0.75) {
+      // Imagen portrait (más alta que ancha)
+      div.classList.add('box-portrait');
+    } else if (width > 800 && height > 800) {
+      // Imagen grande (doble)
+      div.classList.add('box-double');
+    }
+    
     div.appendChild(img);
     return div;
   }
