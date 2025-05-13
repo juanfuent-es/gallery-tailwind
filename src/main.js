@@ -11,8 +11,8 @@ class SearchForm {
   }
 
   initializeEventListeners() {
-    this.form.addEventListener('submit', () => this.handleSubmit(this));
-    this.input.addEventListener('input', () => this.handleInput(this));
+    this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+    e.input.addEventListener('input', (e) => this.handleInput(e));
   }
 
   async handleSubmit(e) {
