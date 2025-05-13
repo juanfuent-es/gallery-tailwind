@@ -1,8 +1,7 @@
 // https://unsplash.com/es/%C3%BAnete
-const YOUR_UNSPLASH_API_KEY = "XYpSwe2Jt7R1akS-u8xGkTpwiNy1-X-h7n5BTq9imr4"
+const API_KEY = "XYpSwe2Jt7R1akS-u8xGkTpwiNy1-X-h7n5BTq9imr4"
 export class ImageService {
   constructor() {
-    this.API_KEY = YOUR_UNSPLASH_API_KEY; // Reemplazar con tu API key
     this.BASE_URL = 'https://api.unsplash.com';
     this.imagesPerPage = 30;
   }
@@ -13,11 +12,11 @@ export class ImageService {
         `${this.BASE_URL}/search/photos?query=${encodeURIComponent(query)}&page=${page}&per_page=${this.imagesPerPage}`,
         {
           headers: {
-            'Authorization': `Client-ID ${this.API_KEY}`
+            'Authorization': `Client-ID ${API_KEY}`
           }
         }
       );
-
+      console.log(response);
       if (!response.ok) {
         throw new Error('Error al buscar imágenes');
       }
