@@ -16,12 +16,12 @@ export class ImageService {
           }
         }
       );
-      console.log(response);
       if (!response.ok) {
-        throw new Error('Error al buscar imágenes');
-      }
-
-      const data = await response.json();
+          throw new Error('Error al buscar imágenes');
+        }
+        
+        const data = await response.json();
+        console.log("data", data);
       return data.results;
     } catch (error) {
       console.error('Error:', error);
